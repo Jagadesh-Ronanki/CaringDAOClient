@@ -13,13 +13,15 @@ const cssOverride = css`
   border-color: white;
 `
 
-const LoadingState = () => {
+const Error = (error) => {
   return (
     <div className={style.wrapper}>
-      <div className={style.title}>Waiting for confirmation...</div>
-      <GridLoader color={'#fff'} loading={true} css={cssOverride} size={30} />
+      <div className={style.title}>
+        Error
+      </div>
+        {error}
     </div>
   )
 }
 
-export default LoadingState
+export default Error

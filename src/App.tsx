@@ -1,29 +1,28 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react'
 import { ConnectButton } from '@rainbow-me/rainbowkit'
 import { useAccount } from 'wagmi'
-import { BrowserRouter } from 'react-router-dom';
-import { Route, Routes } from 'react-router-dom';
-import { createBrowserRouter, RouterProvider } from 'react-router-dom';
-import Landing from './pages/Landing.page';
-import ErrorPage from './pages/Error404.page';
-import Auth from './pages/auth/Auth';
-import Home from './pages/user/home/Home.page';
-import Dashboard from './pages/user/dashboard/Dashboard.page';
-import Mint from './pages/user/mint/Mint.page';
-import Governance from './pages/user/governance/Governance.page';
-import Feed from './pages/user/home/Feed';
+import { BrowserRouter } from 'react-router-dom'
+import { Route, Routes } from 'react-router-dom'
+import { createBrowserRouter, RouterProvider } from 'react-router-dom'
+import Landing from './pages/Landing.page'
+import ErrorPage from './pages/Error404.page'
+import Auth from './pages/auth/Auth'
+import Home from './pages/user/home/Home.page'
+import Dashboard from './pages/user/dashboard/Dashboard.page'
+import Mint from './pages/user/mint/Mint.page'
+import Governance from './pages/user/governance/Governance.page'
+import Feed from './pages/user/home/Feed'
 
 const router = createBrowserRouter([
   {
-    path: "/",
+    path: '/',
     element: <Landing />,
-    errorElement: <ErrorPage />,
-    children: [
-      {
-        path: "auth",
-        element: <Auth />,
-      },
-    ],
+    errorElement: <ErrorPage />
+  },
+  {
+    path: '/register',
+    element: <Auth />,
+    errorElement: <ErrorPage />
   },
   {
     path: '/user',
@@ -31,19 +30,19 @@ const router = createBrowserRouter([
     errorElement: <ErrorPage />,
     children: [
       {
-        path: "dashboard",
+        path: 'dashboard',
         element: <Dashboard />
       },
       {
-        path: "feed",
+        path: 'feed',
         element: <Feed />
       },
       {
-        path: "mint",
+        path: 'mint',
         element: <Mint />
       },
       {
-        path: "governance",
+        path: 'governance',
         element: <Governance />
       }
     ]
@@ -66,7 +65,7 @@ export function App() {
     } else {
       document.location.href = '/'
     }
-    console.log(isReady)
+    console.log('Ready: ', isReady)
   }, [isConnected])
 
 

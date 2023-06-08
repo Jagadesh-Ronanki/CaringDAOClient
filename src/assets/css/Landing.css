@@ -1,0 +1,29 @@
+.landing {
+  cursor: none;
+}
+
+.cursor
+{
+position: fixed;
+width: 20px;
+height: 20px;
+background: #FAF3F3;
+border-radius: 50%;
+pointer-events: none;
+transform: translate(-50%, -50%);
+mix-blend-mode: difference;
+transition: transform 0.3s ease;
+}
+
+.title:hover ~ .cursor {
+  transform: translate(-50%, 50%) scale(7);
+  background: black;
+  box-shadow: 0 0 0 100vh #FAF3F3;
+}
+
+.button:hover ~ .cursor {
+  transform: translate(-50%, 50%) scale(4);
+  background: #F05945;
+  box-shadow: 0 0 0 100vh black;
+  color: white
+}

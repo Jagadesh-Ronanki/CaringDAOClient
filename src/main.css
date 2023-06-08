@@ -27,7 +27,7 @@ code {
 html,
 body {
   height: 100%;
-  margin: 0;
+  margin: 3;
   line-height: 1.5;
   color: #121212;
 }
@@ -384,3 +384,5 @@ i {
   justify-content: center;
   width: 100%;
 }
+
+/* design */

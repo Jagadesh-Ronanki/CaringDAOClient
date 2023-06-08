@@ -1,25 +1,117 @@
-import React, { useState, Dispatch, SetStateAction } from 'react'
+import React, { useState, useEffect, Dispatch, SetStateAction } from 'react'
 import InitialState from './InitialState'
 import ConfirmState from './ConfirmState'
 import LoadingState from './LoadingState'
 import FinishedState from './FinishedState'
+import { PostRegistry, PriceConversion } from '../../../../components/contracts'
+import Error404 from '../../Error404.page'
+import { useContractRead, useContractWrite, useAccount, useWaitForTransaction } from 'wagmi'
+import { precision } from '../../../../utils/precision'
 
-const AppreciateHandler = (
-  {postId, setModalOpen} : 
-  {postId: number, setModalOpen: Dispatch<SetStateAction<boolean>>}) => {
-  
+const AppreciateHandler = ({
+  postId,
+  setModalOpen,
+}: {
+  postId: number;
+  setModalOpen: Dispatch<SetStateAction<boolean>>;
+}) => {
+  const { address } = useAccount()
   const [value, setValue] = useState('')
   const [status, setStatus] = useState('initial')
+  const [latestPrice, setLatestPrice] = useState(0)
+  const [conversionPrice, setConversionPrice] = useState(0)
+
+  //====================================================================================================
+  // Contract Calls
+  //====================================================================================================
+
+  const {
+    data: GLatestPrice,
+    isLoading: LLatestPrice,
+    isSuccess: SLatestPrice,
+    isError: ELatestPrice,
+  } = useContractRead({
+    ...PriceConversion,
+    functionName: 'getLatestPrice',
+    watch: true,
+  })
+
+  useEffect(() => {
+    if (SLatestPrice && GLatestPrice) {
+      const price = Number(GLatestPrice[0]) / 10 ** GLatestPrice[1]
+      setLatestPrice(precision(price))
+    }
+  }, [GLatestPrice, SLatestPrice])
+
+  const {
+    data: GConversionPrice,
+    isLoading: LConversionPrice,
+    isSuccess: SConversionPrice,
+    isError: EConversionPrice,
+  } = useContractRead({
+    ...PriceConversion,
+    functionName: 'UsdtoEth',
+    args: [value],
+    watch: true,
+  })
+
+  useEffect(() => {
+    if (SConversionPrice && GConversionPrice) {
+      const priceWEI = Number(GConversionPrice)
+      setConversionPrice(priceWEI)
+    }
+  }, [GConversionPrice, SConversionPrice])
+
+  // write a contract call to postRegistry to call appreciate function args: postId, amount as wei (conversionPrice) as msg.value
+  const {
+    data: GAppreciate,
+    write: appreciate,
+    isLoading: LAppreciate,
+    isSuccess: SAppreciate,
+    isError: EAppreciate,
+  } = useContractWrite({
+    ...PostRegistry,
+    functionName: 'appreciate',
+  })
+
+  useWaitForTransaction({
+    hash: GAppreciate?.hash,
+    onError: (error) => {
+      console.log('Deposit error: ', error)
+      setStatus('initial') // Reset status in case of error
+    },
+    onSuccess: (transaction) => {
+      if (transaction) {
+        setStatus('finished')
+        console.log('Appreciation done', transaction)
+      }
+    },
+  })
+
+  //====================================================================================================
+  // Handlers
+  //====================================================================================================
 
   const handleConfirm = async () => {
-    setStatus('loading')
-    setStatus('confirm')
+    if (SConversionPrice && GConversionPrice) {
+      setStatus('confirm')
+    } else {
+      setStatus('loading')
+    }
   }
 
   const handleTransact = async () => {
     setStatus('loading')
-    setStatus('finished')
+    await appreciate({
+      args: [postId],
+      from: address,
+      value: conversionPrice,
+    })
   }
+
+  //====================================================================================================
+  // Render Logic
+  //====================================================================================================
 
   const renderLogic = (modalStatus = status) => {
     switch (modalStatus) {
@@ -36,21 +128,24 @@ const AppreciateHandler = (
 
       case 'confirm':
         return (
-          <ConfirmState 
+          <ConfirmState
             handleTransact={handleTransact}
+            latestPrice={latestPrice}
+            conversionPrice={conversionPrice}
           />
         )
-      
+
       case 'loading':
         return <LoadingState />
 
       case 'finished':
-        return <FinishedState setModalOpen={setModalOpen}/>
+        return <FinishedState setModalOpen={setModalOpen} />
 
       default:
-        break
+        return null
     }
   }
+
   return <>{renderLogic()}</>
 }
 

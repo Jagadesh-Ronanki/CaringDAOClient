@@ -6,15 +6,16 @@ import { customStyles } from '../../../assets/css/customStyles'
 import Postbox from './Postbox'
 import Post from './Post'
 
+
+
 const Feed = () => {
+  
   return (
-    <div className="p-4 sm:ml-64">
-      <div className="p-9">
-        <div className="w-full h-48 rounded bg-gray-100 inset-0 p-5">
-          <Postbox />
-        </div>
+    <div className="p-10 h-full">
+      <div className="sticky top-0 w-full h-48 rounded bg-[#121212] inset-0 p-5">
+        <Postbox />
       </div>
-      <div className="p-9">
+      <div className="mt-20">
         <Post/>
       </div>
     </div>
