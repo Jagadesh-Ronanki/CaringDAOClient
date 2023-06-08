@@ -1063,6 +1063,11 @@ export const UserRegistry = {
               'type': 'string'
             },
             {
+              'internalType': 'string',
+              'name': 'profileCID',
+              'type': 'string'
+            },
+            {
               'internalType': 'uint256',
               'name': 'level',
               'type': 'uint256'
@@ -1141,17 +1146,15 @@ export const UserRegistry = {
       'type': 'function'
     },
     {
-      'inputs': [],
-      'name': 'mintCaringToken',
-      'outputs': [],
-      'stateMutability': 'nonpayable',
-      'type': 'function'
-    },
-    {
       'inputs': [
         {
           'internalType': 'string',
           'name': 'name',
+          'type': 'string'
+        },
+        {
+          'internalType': 'string',
+          'name': 'profileCID',
           'type': 'string'
         }
       ],
@@ -1265,6 +1268,11 @@ export const UserRegistry = {
         {
           'internalType': 'string',
           'name': 'name',
+          'type': 'string'
+        },
+        {
+          'internalType': 'string',
+          'name': 'profileCID',
           'type': 'string'
         },
         {
@@ -2274,7 +2282,7 @@ export const PriceConversion = {
           'type': 'uint256'
         }
       ],
-      'stateMutability': 'pure',
+      'stateMutability': 'view',
       'type': 'function'
     },
     {
@@ -2292,7 +2300,7 @@ export const PriceConversion = {
           'type': 'uint8'
         }
       ],
-      'stateMutability': 'pure',
+      'stateMutability': 'view',
       'type': 'function'
     }
   ],
@@ -4003,6 +4011,25 @@ export const GovernanceToken = {
       'anonymous': false,
       'inputs': [
         {
+          'indexed': false,
+          'internalType': 'uint256',
+          'name': '_fromTokenId',
+          'type': 'uint256'
+        },
+        {
+          'indexed': false,
+          'internalType': 'uint256',
+          'name': '_toTokenId',
+          'type': 'uint256'
+        }
+      ],
+      'name': 'BatchMetadataUpdate',
+      'type': 'event'
+    },
+    {
+      'anonymous': false,
+      'inputs': [
+        {
           'indexed': true,
           'internalType': 'address',
           'name': 'delegator',
@@ -4053,6 +4080,19 @@ export const GovernanceToken = {
       'anonymous': false,
       'inputs': [],
       'name': 'EIP712DomainChanged',
+      'type': 'event'
+    },
+    {
+      'anonymous': false,
+      'inputs': [
+        {
+          'indexed': false,
+          'internalType': 'uint256',
+          'name': '_tokenId',
+          'type': 'uint256'
+        }
+      ],
+      'name': 'MetadataUpdate',
       'type': 'event'
     },
     {
@@ -4470,6 +4510,11 @@ export const GovernanceToken = {
           'internalType': 'address',
           'name': 'to',
           'type': 'address'
+        },
+        {
+          'internalType': 'string',
+          'name': 'uri',
+          'type': 'string'
         }
       ],
       'name': 'safeMint',
@@ -4608,6 +4653,49 @@ export const GovernanceToken = {
       'inputs': [
         {
           'internalType': 'uint256',
+          'name': 'index',
+          'type': 'uint256'
+        }
+      ],
+      'name': 'tokenByIndex',
+      'outputs': [
+        {
+          'internalType': 'uint256',
+          'name': '',
+          'type': 'uint256'
+        }
+      ],
+      'stateMutability': 'view',
+      'type': 'function'
+    },
+    {
+      'inputs': [
+        {
+          'internalType': 'address',
+          'name': 'owner',
+          'type': 'address'
+        },
+        {
+          'internalType': 'uint256',
+          'name': 'index',
+          'type': 'uint256'
+        }
+      ],
+      'name': 'tokenOfOwnerByIndex',
+      'outputs': [
+        {
+          'internalType': 'uint256',
+          'name': '',
+          'type': 'uint256'
+        }
+      ],
+      'stateMutability': 'view',
+      'type': 'function'
+    },
+    {
+      'inputs': [
+        {
+          'internalType': 'uint256',
           'name': 'tokenId',
           'type': 'uint256'
         }
@@ -4618,6 +4706,19 @@ export const GovernanceToken = {
           'internalType': 'string',
           'name': '',
           'type': 'string'
+        }
+      ],
+      'stateMutability': 'view',
+      'type': 'function'
+    },
+    {
+      'inputs': [],
+      'name': 'totalSupply',
+      'outputs': [
+        {
+          'internalType': 'uint256',
+          'name': '',
+          'type': 'uint256'
         }
       ],
       'stateMutability': 'view',

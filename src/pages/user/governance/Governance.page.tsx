@@ -62,7 +62,7 @@ const Governance = () => {
         <>
           <InnerTransparentBlock>
           <InnerBlock.Header className="flex justify-between text-[#f3f3f3]">
-            <span>DAO</span>
+            <span className="text-[#f3f3f3] mb-5">DAO</span>
           </InnerBlock.Header>
 
           <div>

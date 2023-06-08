@@ -33,13 +33,13 @@ export const Navbar = () => {
 
   return (
     <div className='text-white h-auto flex flex-row justify-center space-x-32 pt-12'>
-      <NavLink to='/user/dashboard' className='nav'>
+      <NavLink to='/user/dashboard' className='nav' activeClassName='active-nav'>
         Dashboard
       </NavLink>
-      <NavLink to='/user/feed' className='nav'>
+      <NavLink to='/user/feed' className='nav' activeClassName='active-nav'>
         Feed
       </NavLink>
-      <NavLink to='/user/governance' className='nav'>
+      <NavLink to='/user/governance' className='nav' activeClassName='active-nav'>
         Governance
       </NavLink>
     </div>

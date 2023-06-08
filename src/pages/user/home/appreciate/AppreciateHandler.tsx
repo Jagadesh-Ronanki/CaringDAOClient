@@ -74,7 +74,11 @@ const AppreciateHandler = ({
     functionName: 'appreciate',
   })
 
-  useWaitForTransaction({
+  const {
+    data: appreciateTxData,
+    isSuccess: appreciateTxSuccess,
+    error: appreciateTxtxError,
+  } = useWaitForTransaction({
     hash: GAppreciate?.hash,
     onError: (error) => {
       console.log('Deposit error: ', error)
@@ -82,7 +86,6 @@ const AppreciateHandler = ({
     },
     onSuccess: (transaction) => {
       if (transaction) {
-        setStatus('finished')
         console.log('Appreciation done', transaction)
       }
     },
@@ -100,14 +103,19 @@ const AppreciateHandler = ({
     }
   }
 
-  const handleTransact = async () => {
+  const handleTransact = () => {
     setStatus('loading')
-    await appreciate({
+    appreciate({
       args: [postId],
       from: address,
       value: conversionPrice,
     })
   }
+
+  useEffect(() => {
+    if(appreciateTxSuccess)
+    setStatus('finished')
+  }, [appreciateTxSuccess])
 
   //====================================================================================================
   // Render Logic

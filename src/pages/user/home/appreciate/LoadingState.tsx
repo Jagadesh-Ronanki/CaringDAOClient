@@ -16,7 +16,7 @@ const cssOverride = css`
 const LoadingState = () => {
   return (
     <div className={style.wrapper}>
-      <div className={style.title}>Waiting for confirmation...</div>
+      <div className={style.title}>your support is valuable</div>
       <GridLoader color={'#fff'} loading={true} css={cssOverride} size={30} />
     </div>
   )

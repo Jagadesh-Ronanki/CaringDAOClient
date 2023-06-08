@@ -17,6 +17,7 @@ body {
     sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  cursor: none;
 }
 
 code {
@@ -58,6 +59,10 @@ button:hover {
 button:active {
   box-shadow: 0 0px 1px hsla(0, 0%, 0%, 0.4);
   transform: translateY(1px);
+}
+
+.active-nav {
+  color: red; /* Set the desired active color */
 }
 
 #contact h1 {
@@ -386,3 +391,5 @@ i {
 }
 
 /* design */
+
+

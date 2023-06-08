@@ -67,6 +67,9 @@ const Landing = () => {
   return (
     <>
       <div className=' landing flex flex-col justify-center items-center h-screen w-screen bg-black'>
+        <div className='brand text-blue-100 font-mono tracking-wide mr-8'>
+          by e<span className='text-green-400'>ll</span>even
+        </div>
         <div className=' title flex flex-row'>
           <div className=' text-[130px] font-light text-[#FAF3F3]'>
             CARING
@@ -75,11 +78,11 @@ const Landing = () => {
             DAO
           </div>
         </div>
-        {!isConnected ? (<div>
+        {!isConnected ? (<div className="text-[#FAF3F3">
           <ConnectButton />
         </div>) : ( 
           <button
-            className=" button h-10 px-4 font-light font-mono rounded-md bg-black text-[#F05945] ${disabled ? 'opacity-50 cursor-not-allowed' : ''}`}"
+            className=" button cursor-none h-10 px-4 font-light font-mono rounded-md bg-black text-[#F05945] ${disabled ? 'opacity-50 cursor-not-allowed' : ''}`}"
             type="submit"
             onClick={handleGetStartedClick}
           >
@@ -93,43 +96,3 @@ const Landing = () => {
 }
 
 export default Landing
-
-const temp = () => {
-  return (
-    <div className="bg-white h-screen w-screen overflow-hidden">
-      <div className="mt-10 flex flex-col items-center justify-center gap-x-6">
-        {/* image holder */}
-        <button
-          className="h-10 px-4 font-light font-mono rounded-md bg-black text-[#F05945] ${disabled ? 'opacity-50 cursor-not-allowed' : ''}`}"
-          type="submit"
-          onClick={handleAuthClick}
-          disabled={authenticate}
-        >
-          Authenticate
-        </button>
-        <div>
-          <img src={logo} alt="logo" className="scale-[150%] pt-[80px] md:scale-[250%]" />
-        </div>
-        <div>
-          <ConnectButton />
-        </div>
-        <div className="m-10">
-          {isConnected && isRegistered ? (
-            <div>
-              <NavLink to="/user">
-                <Button label={'Dashboard'} width="14rem" func={(() => {})}/>
-              </NavLink>
-            </div>
-          ) : (
-            <div>
-              {isConnected && !authenticate && (
-                <Button label={'Authenticate'} width="14rem" func={handleAuthClick} disabled={authenticate}/>
-              )}
-            </div>
-          )}
-          <Outlet />
-        </div>
-      </div>
-    </div>
-  )
-}

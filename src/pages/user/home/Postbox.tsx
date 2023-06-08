@@ -40,7 +40,11 @@ const Postbox = () => {
     setPostMessage('')
   }
 
-  useWaitForTransaction({
+  const {
+    data: txData,
+    isSuccess: txSuccess,
+    error: txError,
+  } = useWaitForTransaction({
     hash: postTx?.hash,
     onError: error => {
       console.log('Post error: ', error)
@@ -65,6 +69,13 @@ const Postbox = () => {
     }
     fetchUser()
   }, [])
+
+  useEffect(() => {
+    if (txSuccess) {
+      /* window.location.reload() */
+      console.log('Posted')
+    }
+  }, [txSuccess, navigate])
 
   useEffect(() => {
     const handleMouseEnter = (e) => {
@@ -95,10 +106,15 @@ const Postbox = () => {
     <div className={style.wrapper}>
       <div className={style.tweetBoxLeft}>
         <img
-          src={user}
+          src={creator.profileCID}
           className={
             style.profileImage
           }
+          style={{
+            aspectRatio: '1/1', // Maintain a square aspect ratio
+            objectFit: 'cover', // Crop the image to fit within the circular shape
+            objectPosition: 'center', // Center the image within the circular shape
+          }}
         />
         <span className={`${style.name} text-cyan-50`}>{creator.name}</span>
       </div>
@@ -115,20 +131,33 @@ const Postbox = () => {
               <button
                 type='submit'
                 disabled={!postMessage}
-                className={`${style.submitGeneral} ${style.inactiveSubmit}`}
+                className={`${style.submitGeneral} ${
+                  postMessage && style.inactiveSubmit
+                } animate-pulse`}
               >
-                waiting for confirmation
+                Posting
               </button>
-            ) : (<button
+            ) : postStatus === 'success' && !txSuccess ? (<button
               type='submit'
               onClick={event => submitPost(event)}
               disabled={!postMessage}
               className={`${style.submitGeneral} ${
-                postMessage ? style.activeSubmit : style.inactiveSubmit
+                postMessage && style.inactiveSubmit
               }`}
             >
-              Post
-            </button>)
+              Posting
+            </button>) : (
+              <button
+                type='submit'
+                onClick={event => submitPost(event)}
+                disabled={!postMessage}
+                className={`${style.submitGeneral} ${
+                  postMessage ? style.activeSubmit : style.inactiveSubmit
+                }`}
+              >
+                Post
+              </button>
+            )
             }
           </div>
         </form>

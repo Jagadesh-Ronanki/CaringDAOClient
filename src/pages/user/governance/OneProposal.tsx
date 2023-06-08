@@ -22,8 +22,10 @@ import { client } from '../../../utils/client'
 import { Button } from '@material-tailwind/react'
 
 export const OneProposal = ({ proposalId, showBlocks, canVote}) => {
+  const {address} = useAccount()
   const [description, setDescription] = useState('')
   const [state, setState] = useState(1)
+  const [hasVoted, setHasVoted] = useState(false)
   const [voteData, setVoteData] = useState({
     id: '',
     option: '',
@@ -84,8 +86,16 @@ export const OneProposal = ({ proposalId, showBlocks, canVote}) => {
         watch: true
       })
 
+      const voted = await client.readContract({
+        ...Governor,
+        functionName: 'hasVoted',
+        args: [proposalId, address], // Assuming `address` is the user's address
+      })
+
+
       setState(s)
       setDescription(desc[3])
+      setHasVoted(voted)
     }
     fetchProposal()
   },[])
@@ -106,23 +116,29 @@ export const OneProposal = ({ proposalId, showBlocks, canVote}) => {
 
   return (
     <div
-      className={'text-gray-800 relative break-words bg-white rounded-lg shadow-gray-300/50 shadow-md px-8 py-6 mb-4'}>
+      className={'text-white relative break-words bg-[#100f1c] rounded-lg shadow-[#212031] shadow-md px-8 py-6 mb-4'}>
       <div className={'font-medium text-base'}>{description}</div>
-      {canVote && (
+      {canVote && !hasVoted && (
         <div className={'pt-4 mt-4 border-t border-dashed border-gray-300 text-center text-gray-600'}>
           {(state === 1) && (
             <>
-              <Button variant={'outlined'} size={'sm'} color={'red'} onClick={() => handleVote(0)}>
+              <button className={'vote-r mx-3 text-sm text-red-300 outline bg-transparent hover:bg-red-300 hover:text-black hover: caret-transparent'} onClick={() => handleVote(0)}>
                 Against
-              </Button>
-              <Button variant={'outlined'} size={'sm'} color={'gray'} className={'mx-2'} onClick={() => handleVote(2)}>
+              </button>
+              <button className={'vote-s mx-3 text-sm text-slate-300 outline bg-transparent hover:bg-slate-300 hover:text-black hover: caret-transparent'} onClick={() => handleVote(2)}>
                 Abstain
-              </Button>
-              <Button variant={'outlined'} size={'sm'} color={'green'} onClick={() => handleVote(1)}>
+              </button>
+              <button className={'vote-g mx-3 text-sm text-green-300 outline bg-transparent hover:bg-green-300 hover:text-black hover: caret-transparent'} onClick={() => handleVote(1)}>
                 Agree
-              </Button>
+              </button>
             </>
           )}
+        </div>
+      )}
+
+      {canVote && hasVoted && (
+        <div className={'pt-4 mt-4 border-t border-dashed border-gray-300 text-center'}>
+          <span className='text-3xl font-mono animate-spin'>Voted</span>
         </div>
       )}
 

@@ -6,6 +6,7 @@ import './Dashboard.css'
 import {ClipLoader} from 'react-spinners'
 import { client } from '../../../utils/client'
 import { precision } from '../../../utils/precision'
+import { NFTStorage, File } from 'nft.storage'
 
 const style = {
   wrapper: 'h-[25rem] w-[35rem] text-white bg-[#15202b] rounded-3xl p-10 flex flex-col',
@@ -46,7 +47,12 @@ const Dashboard = () => {
   const [withdrawalThreshold, setWithdrawalThreshold] = useState(0)
   const [isHovered, setIsHovered] = useState(false)
   const [levelToGovern, setLevelToGovern] = useState(9999)
-
+  const [metadataURL, setMetadataURL] = useState('')
+  const [mintClicked, setMintClicked] = useState(false)
+  const [tokenURI, setTokenURI] = useState(false)
+  
+  const API_KEY = import.meta.env.VITE_NFT_STORAGE_API_KEY
+  
   const { data: GUSD, isSuccess:SUSD } = useContractRead({
     ...PriceConversion,
     functionName: 'getLatestPrice',
@@ -59,13 +65,17 @@ const Dashboard = () => {
     )
   }, [GUSD])
 
-  const {data: depositTx, write: deposit, status: depositStatus} = useContractWrite({
+  const {data: depositData, write: deposit, status: depositStatus} = useContractWrite({
     ...UserRegistry,
     functionName: 'addContributionBal',
   })
 
-  useWaitForTransaction({
-    hash: depositTx?.hash,
+  const {
+    data: depositTx,
+    isSuccess: depositSuccess,
+    error: depositError,
+  } = useWaitForTransaction({
+    hash: depositData?.hash,
     onError: error => {
       console.log('Deposit error: ', error)
     },
@@ -103,7 +113,7 @@ const Dashboard = () => {
   const { config: contractWriteConfig } = usePrepareContractWrite({
     ...contractConfig,
     functionName: 'safeMint',
-    args: [address]
+    args: [address, metadataURL/* tokenURI with metadata and userDetails.profileCID */]
   })
 
   const {
@@ -121,6 +131,22 @@ const Dashboard = () => {
   } = useWaitForTransaction({
     hash: mintData?.hash,
   })
+
+  async function storeAsset(imageURI) {
+    const response = await fetch(imageURI)
+    const imageData = await response.blob()
+    
+    const client = new NFTStorage({ token: API_KEY })
+    const metadata = await client.store({
+        name: 'Caring(DAO) Power',
+        description: 'As you got lot of caring Hearts 🤍... keep incentivizing your work',
+        image: imageData
+    })
+    console.log('Metadata stored on Filecoin and IPFS with URL:', metadata)
+    setMetadataURL(metadata.url)
+    setTokenURI(false)
+    setMintClicked(true)
+  }
 
   useEffect(() => {
     const fetchConversionPrice = async () => {
@@ -161,12 +187,9 @@ const Dashboard = () => {
         tokenHolder: userData.tokenHolder,
         tokenId: userData.tokenId.toString(),
       })
-
-      console.log(userData)
-      console.log(userDetails)
     }
     fetch()
-  }, [depositTx, depositStatus, withdraw, withdrawTx, txSuccess, txData])
+  }, [depositTx, depositData, depositStatus, withdraw, withdrawTx, txSuccess, txData])
 
   useEffect(() => {
     const fetchThreshold = async () => {
@@ -192,7 +215,19 @@ const Dashboard = () => {
     return address.slice(0, 5) + '...' + address.slice(38, 42)
   }
 
-/* styles */
+  const handleMint = async () => {
+    setTokenURI(true)
+    await storeAsset(userDetails.profileCID)
+  }
+
+  useEffect(() => {
+    if (metadataURL != '' && !isMintLoading && !isMintStarted) {
+      console.log('Register call')
+      mint()
+    }
+  }, [mintClicked])
+
+  /* styles */
   useEffect(() => {
     const handleMouseEnter = (e) => {
       const cursor = document.querySelector('.cursor')
@@ -279,20 +314,19 @@ const Dashboard = () => {
           type='submit'
           data-mint-loading={isMintLoading}
           data-mint-started={isMintStarted}
-          onClick={() => mint?.()}
-          className='txbutton text-[#ffe347] w-[300px] font-mono font-md mt-7 mb-6'
+          onClick={handleMint}
+          className={`txbutton text-[#ffe347] w-[300px] font-mono font-md mt-7 mb-6 ${depositStatus === 'loading' || tokenURI && 'animate-pulse'}`}
         >
+          {tokenURI && 'generating tokenURI'}
           {isMintLoading && 'Waiting for approval'}
           {isMintStarted && 'Minting...'}
-          {!isMintLoading && !isMintStarted && '🎉 Mint Governance Token'}
+          {!isMintLoading && !isMintStarted && !tokenURI && '🎉 Mint Governance Token'}
         </button>)}
         <div className={`card relative w-[300px] h-[400px] bg-slate-100 
-          ${userDetails.tokenHolder} && ring-2 ring-yellow-500 ring-opacity-50 ring-offset-3 
-          transition duration-300 
-          hover:ring-opacity-0`}>
+          ${userDetails.tokenHolder ? 'ring-2 ring-white-500 ring-opacity-50 ring-offset-3 transition duration-300 hover:ring-opacity-0' : ''}`}>
           <div className="imgbox">
-            <img src={jrnet} alt="" />
-            <img src={jrnet} alt="" />
+            <img src={userDetails.profileCID} alt="" />
+            <img src={userDetails.profileCID} alt="" />
           </div>
           <div className="details">
             <div className="content">
@@ -317,11 +351,11 @@ const Dashboard = () => {
                 <hr className="mt-8 mb-8 w-full h-1 bg-black"/>
                 <div className=' flex flex-col justify-between items-center w-full'>
                   <span>Appreciation Balance</span>
-                  <span>{precision((userDetails.appreciationBalance)*usd)} </span>
+                  <span>${precision((userDetails.appreciationBalance)*usd)} </span>
                 </div>
                 <div className=' flex flex-col justify-between items-center w-full'>
                   <span>Contribution Balance</span>
-                  <span>{precision((userDetails.contributionBalance)*usd)} </span>
+                  <span>${precision((userDetails.contributionBalance)*usd)} </span>
                 </div> 
               </div>
               <button
@@ -354,9 +388,12 @@ const Dashboard = () => {
         <button 
           type='submit'
           onClick={handleDeposit}
-          className=' txbutton text-[#ffe347] w-[300px] font-mono font-md'
+          data-mint-loading={depositStatus}
+          data-mint-started={depositStatus}
+          className={` txbutton text-[#ffe347] w-[300px] font-mono font-md ${depositStatus === 'loading' && 'animate-pulse'}`}
         >
-          Deposit Amount
+          {depositStatus === 'loading' && 'Depositing...'}
+          {depositStatus !== 'loading' && 'Deposit Amount'}
         </button>
       </div>
     </>
@@ -365,58 +402,3 @@ const Dashboard = () => {
 }
 
 export default Dashboard
-
-
-const temp = () => {
-  return (
-    <div className="p-4 sm:ml-64">
-      {<div className="p-4">
-        <div className="flex items-start justify-start h-48 mb-4 rounded bg-gray-50 dark:bg-gray-800">
-          <div className=" text-2xl text-gray-400 dark:text-gray-500">
-            Name: {userDetails.name} <br/>
-            Address: address <br/>
-            Level: {userDetails.level} <br/>
-            Appreciation Balance: {userDetails.appreciationBalance}  <br/>
-            Contribution Balance: {userDetails.contributionBalance.toFixed(2)}  <br/>
-            appreciationsTaken: {userDetails.appreciationsTaken} <br/>
-            appreciationsGiven: {userDetails.appreciationsGiven}  <br/>
-            tokenHolder: {userDetails.tokenHolder} <br/>
-            
-            {/* contribution amount */}
-            <span> Add contribution balance </span>
-            <input
-              type='text'
-              className={style.input}
-              placeholder='USD'
-              value={value}
-              onChange={e => setValue(e.target.value)}
-            />
-            <div
-              className={
-                value
-                  ? style.mintButton
-                  : style.inactiveMintButton
-              }
-              onClick={() => {
-                if (value) {
-                  handleDeposit()
-                }
-              }}
-            >
-              Add
-            </div>
-            <button
-              type='submit'
-              onClick={() => {
-                handleWithdraw()
-              }}
-              className={`${style.footerIcon} hover:text-cyan-200 hover:bg-[#0e0f10] px-4`}
-            >
-              Withdraw 
-            </button>
-          </div>
-        </div>
-      </div>}
-    </div>
-  )
-}
