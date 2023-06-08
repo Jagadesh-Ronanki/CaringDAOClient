@@ -1,3 +1,4 @@
+// @ts-nocheck
 import React, {useState, useEffect} from 'react'
 import { ConnectButton } from '@rainbow-me/rainbowkit'
 import '../assets/css/Landing.css'

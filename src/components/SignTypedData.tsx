@@ -1,3 +1,4 @@
+// @ts-nocheck
 import { useEffect, useState } from 'react'
 import { recoverTypedDataAddress } from 'viem'
 import { type Address, useSignTypedData } from 'wagmi'

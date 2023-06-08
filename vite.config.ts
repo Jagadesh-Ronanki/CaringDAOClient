@@ -4,8 +4,11 @@ import { defineConfig } from 'vite'
 // https://vitejs.dev/config/
 export default defineConfig({
   define: {
-    global: 'globalThis',
-  },
+    // "process.env": process.env,
+    // // By default, Vite doesn't include shims for NodeJS/
+    // // necessary for segment analytics lib to work
+    "global": {},
+},
   resolve: {
     alias: {
       process: 'process/browser',

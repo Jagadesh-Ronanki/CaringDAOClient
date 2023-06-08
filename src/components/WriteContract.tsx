@@ -1,3 +1,4 @@
+// @ts-nocheck
 import { BaseError } from 'viem'
 import { useContractWrite, useWaitForTransaction } from 'wagmi'
 

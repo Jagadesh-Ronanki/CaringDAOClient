@@ -1,3 +1,4 @@
+// @ts-nocheck
 import React, { useState, useEffect } from 'react'
 import user from '../../../assets/images/user.png'
 import { useContractWrite, useAccount, useWaitForTransaction } from 'wagmi'

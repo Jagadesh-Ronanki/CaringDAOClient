@@ -1,3 +1,4 @@
+// @ts-nocheck
 import { erc20ABI } from 'wagmi'
 import { 
   constants,

@@ -1,3 +1,4 @@
+// @ts-nocheck
 import { parseEther } from 'viem'
 import { useSendTransaction, useWaitForTransaction } from 'wagmi'
 

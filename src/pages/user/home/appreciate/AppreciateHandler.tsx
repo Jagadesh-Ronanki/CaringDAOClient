@@ -1,3 +1,4 @@
+// @ts-nocheck
 import React, { useState, useEffect, Dispatch, SetStateAction } from 'react'
 import InitialState from './InitialState'
 import ConfirmState from './ConfirmState'

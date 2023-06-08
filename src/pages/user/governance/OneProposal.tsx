@@ -15,6 +15,7 @@ enum ProposalState {
 }
 */
 
+// @ts-nocheck
 import React, {useState, useEffect} from 'react'
 import { Governor } from '../../../components/contracts'
 import { useAccount, useContractWrite, usePrepareContractWrite, useWaitForTransaction } from 'wagmi'

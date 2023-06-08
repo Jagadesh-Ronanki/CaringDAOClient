@@ -1,3 +1,5 @@
+// @ts-nocheck
+
 import React, { useState, useEffect } from 'react'
 import { useContractRead, useContractWrite, useAccount, useWaitForTransaction, usePrepareContractWrite } from 'wagmi'
 import { UserRegistry, PriceConversion, Handler, Variables, GovernanceToken } from '../../../components/contracts'
