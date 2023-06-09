@@ -17,7 +17,7 @@ ReactDOM.createRoot(document.getElementById('root')!).render(
           accentColorForeground: 'black',
           borderRadius: 'large',
           fontStack: 'system',
-          overlayBlur: 'large',
+          overlayBlur: 'small',
         })}
       >
         <App />
