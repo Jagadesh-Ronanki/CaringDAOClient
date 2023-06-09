@@ -6,7 +6,7 @@ import { publicProvider } from 'wagmi/providers/public'
 const walletConnectProjectId = '264585abe07a44b0c0d2e8645c740ef6'
 
 const { chains, publicClient, webSocketPublicClient } = configureChains(
-  [{/*mainnet*/} sepolia, ...(import.meta.env?.MODE === 'development' ? [sepolia] : []), ...(import.meta.env?.MODE === 'development' ? [foundry] : [])],
+  [sepolia, ...(import.meta.env?.MODE === 'development' ? [sepolia] : []), ...(import.meta.env?.MODE === 'development' ? [foundry] : [])],
   [
     publicProvider(),
   ],
